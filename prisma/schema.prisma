@@ -1,0 +1,92 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+model Video {
+  id             String    @id @default(uuid())
+  slug           String    @unique
+  title          String
+  prompt         String
+  videoUrl       String
+  thumbnailUrl   String
+  category       String
+  style          String
+  lighting       String
+  cameraMotion   String
+  selectedItems  String[]  // Array of 10-15 room items
+  duration       Int       @default(5) // in seconds
+  createdAt      DateTime  @default(now())
+  viewCount      Int       @default(0)
+  likeCount      Int       @default(0)
+  saveCount      Int       @default(0)
+  trendScore     Float     @default(0.0)
+
+  views          View[]
+  likes          Like[]
+  saves          SavedItem[]
+
+  @@index([category])
+  @@index([style])
+  @@index([createdAt])
+  @@index([trendScore])
+}
+
+model View {
+  id        String   @id @default(uuid())
+  videoId   String
+  video     Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  sessionId String   // Session ID for deduplication
+  createdAt DateTime @default(now())
+
+  @@unique([videoId, sessionId])
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  videoId   String
+  video     Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  sessionId String
+  createdAt DateTime @default(now())
+
+  @@unique([videoId, sessionId])
+}
+
+model SavedItem {
+  id        String   @id @default(uuid())
+  videoId   String
+  video     Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  sessionId String
+  createdAt DateTime @default(now())
+
+  @@unique([videoId, sessionId])
+}
+
+model GenerationJob {
+  id           String   @id @default(uuid())
+  status       String   // PENDING, SUCCESS, FAILED
+  category     String
+  style        String
+  prompt       String
+  errorMessage String?
+  createdAt    DateTime @default(now())
+  completedAt  DateTime?
+}
+
+model SystemConfig {
+  id                 String   @id @default("default-config")
+  siteName           String   @default("DreamRooms AI")
+  generationInterval Int      @default(240)
+  homeVideosLimit    Int      @default(9)
+  useMockData        Boolean  @default(false)
+  heroVideoId        String?
+  gcpProjectId       String   @default("lifeos-agent-260515")
+  gcpLocation        String   @default("us-central1")
+  vertexModel        String   @default("veo-2.0-generate-001")
+  updatedAt          DateTime @updatedAt
+}

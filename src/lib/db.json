@@ -1,0 +1,55 @@
+{
+  "videos": [
+    {
+      "id": "video-1779738602608",
+      "slug": "elegant-scandinavian-luxury-hall-7747",
+      "title": "Elegant Scandinavian Luxury Hall",
+      "prompt": "Minimalist living room interior with curved modular sofa, minimalist coffee table, sleek media console, woven area rug, sculptural floor lamp, large abstract painting, potted fiddle leaf fig, soft daylight, subtle pan, photorealistic architectural rendering, luxury premium aesthetic.",
+      "videoUrl": "https://storage.googleapis.com/dreamrooms-videos-lifeos-260524/dreamroom_elegant-scandinavian-luxury-hall-7747.mp4",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&q=80&w=600",
+      "category": "Luxury Hall",
+      "style": "Scandinavian",
+      "lighting": "Soft daylight",
+      "cameraMotion": "subtle pan",
+      "selectedItems": ["curved modular sofa", "minimalist coffee table", "sleek media console", "woven area rug", "sculptural floor lamp", "large abstract painting", "potted fiddle leaf fig"],
+      "duration": 8,
+      "createdAt": "2026-05-25T19:50:02.000Z",
+      "viewCount": 0,
+      "likeCount": 0,
+      "saveCount": 0,
+      "trendScore": 1000.0
+    }
+  ],
+  "savedItems": [],
+  "likes": [],
+  "views": [],
+  "generationJobs": [
+    {
+      "id": "job-1779736031038",
+      "status": "SUCCESS",
+      "category": "Luxury Hall",
+      "style": "Scandinavian",
+      "prompt": "Minimalist living room interior...",
+      "createdAt": "2026-05-25T19:07:11.000Z",
+      "completedAt": "2026-05-25T19:50:02.000Z"
+    }
+  ],
+  "logs": [
+    {
+      "id": "log-cleanup",
+      "timestamp": "2026-05-25T20:30:00.000Z",
+      "level": "info",
+      "message": "Database migrated to GCS-backed persistence. First real Veo-generated video added."
+    }
+  ],
+  "config": {
+    "siteName": "DreamRooms AI",
+    "generationInterval": 240,
+    "homeVideosLimit": 9,
+    "useMockData": false,
+    "heroVideoId": null,
+    "gcpProjectId": "dreamrooms-lifeos-260524",
+    "gcpLocation": "us-central1",
+    "vertexModel": "veo-2.0-generate-001"
+  }
+}

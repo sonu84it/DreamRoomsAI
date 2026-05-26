@@ -129,15 +129,19 @@ export async function syncGcsToSql() {
     const gcsVideoIds = new Set(gcsVideos.map(v => v.id));
     
     // 2. Identify videos in SQL that are not in GCS db.json (stale videos to delete)
-    const videosToDelete = sqlVideos.filter(v => !gcsVideoIds.has(v.id));
-    if (videosToDelete.length > 0) {
-      console.log(`[DB Sync] Purging ${videosToDelete.length} stale videos from SQL database...`);
-      await prisma.video.deleteMany({
-        where: {
-          id: { in: videosToDelete.map(v => v.id) }
-        }
-      });
-      console.log('[DB Sync] Purged stale videos successfully.');
+    // Only purge stale videos if GCS db.json has at least one valid video.
+    // This protects against accidental purges if the GCS database is temporarily empty or reset.
+    if (gcsVideos.length > 0) {
+      const videosToDelete = sqlVideos.filter(v => !gcsVideoIds.has(v.id));
+      if (videosToDelete.length > 0) {
+        console.log(`[DB Sync] Purging ${videosToDelete.length} stale videos from SQL database...`);
+        await prisma.video.deleteMany({
+          where: {
+            id: { in: videosToDelete.map(v => v.id) }
+          }
+        });
+        console.log('[DB Sync] Purged stale videos successfully.');
+      }
     }
     
     // 3. Identify videos in GCS db.json that are not in SQL (new videos to insert)
@@ -250,9 +254,11 @@ export const db = {
   log: (level: LogEntry['level'], message: string, meta?: any) => {
     console.log(`[${level.toUpperCase()}] ${message}`, meta ? JSON.stringify(meta) : '');
     
-    // File fallback logging
+    // Safety check: do not write or initialize cold cache logs to avoid GCS corruption
+    if (!_dbCache) return;
+
     try {
-      const state = readDB();
+      const state = _dbCache;
       const newLog: LogEntry = {
         id: `log-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
         timestamp: new Date().toISOString(),
@@ -262,7 +268,11 @@ export const db = {
       };
       state.logs.unshift(newLog); // newest first
       if (state.logs.length > 500) state.logs.pop(); // cap logs size
-      writeDB(state);
+      
+      // Only write GCS persistently if SQL mode is not active to reduce write overhead and lock contention
+      if (!isSqlEnabled) {
+        writeDB(state);
+      }
     } catch (e) {
       // ignore
     }

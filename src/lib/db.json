@@ -1,6 +1,36 @@
 {
   "videos": [
     {
+      "id": "video-1779815048000",
+      "slug": "elegant-futuristic-reading-room-9548",
+      "title": "Elegant Futuristic Reading Room",
+      "prompt": "Futuristic reading room interior with plush overstuffed chaise lounge, floor-to-ceiling built-in bookcases, warm high-CRI reading lamp, cozy wood fireplace, acoustic wall panels, soft leather footrest, hand-knotted Persian rug, potted snake plant, antique globe, stacked leather-bound classic novels, cup of hot tea on coaster, vintage magnifying glass, candle-lit mood, elegant tracking shot, photorealistic architectural visualization, curated with glowing polymethyl methacrylate, carbon fiber, seamless liquid metal, curved fiberglass, evoking a sci-fi, avant-garde, ultra-modern, high-tech, dreamlike feeling, elegant atmosphere, ultra realistic interior render.",
+      "videoUrl": "https://storage.googleapis.com/dreamrooms-videos-lifeos-260524/dreamroom_elegant-futuristic-reading-room-9548.mp4",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?auto=format&fit=crop&q=80&w=600",
+      "category": "Reading Room",
+      "style": "Futuristic",
+      "lighting": "Candle-lit mood",
+      "cameraMotion": "elegant tracking shot",
+      "selectedItems": [
+        "plush overstuffed chaise lounge",
+        "floor-to-ceiling built-in bookcases",
+        "warm high-CRI reading lamp",
+        "cozy wood fireplace",
+        "acoustic wall panels",
+        "soft leather footrest",
+        "hand-knotted Persian rug",
+        "potted snake plant",
+        "antique globe",
+        "stacked leather-bound classic novels"
+      ],
+      "duration": 8,
+      "createdAt": "2026-05-26T17:04:08.000Z",
+      "viewCount": 0,
+      "likeCount": 0,
+      "saveCount": 0,
+      "trendScore": 1000.0
+    },
+    {
       "id": "video-1779738602608",
       "slug": "elegant-scandinavian-luxury-hall-7747",
       "title": "Elegant Scandinavian Luxury Hall",
@@ -24,6 +54,15 @@
   "likes": [],
   "views": [],
   "generationJobs": [
+    {
+      "id": "job-1779814939548",
+      "status": "SUCCESS",
+      "category": "Reading Room",
+      "style": "Futuristic",
+      "prompt": "Futuristic reading room interior with plush overstuffed chaise lounge...",
+      "createdAt": "2026-05-26T17:02:19.000Z",
+      "completedAt": "2026-05-26T17:04:08.000Z"
+    },
     {
       "id": "job-1779736031038",
       "status": "SUCCESS",

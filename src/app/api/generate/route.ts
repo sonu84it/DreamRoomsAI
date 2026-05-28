@@ -11,9 +11,52 @@ export async function POST(req: NextRequest) {
       // body empty or not json, ignore
     }
 
-    const { category, style } = body as { category?: string; style?: string };
+    const { category, style, force } = body as {
+      category?: string;
+      style?: string;
+      force?: boolean;
+    };
 
-    // Start generation async — do NOT await, return job info immediately
+    // ── Cooldown Guard ──────────────────────────────────────────────
+    // Enforce generationInterval: skip if the last video was generated
+    // less than `generationInterval` minutes ago (unless force=true).
+    if (!force) {
+      const [config, videos] = await Promise.all([
+        db.getConfig(),
+        db.getVideos({ sort: 'newest' }),
+      ]);
+
+      const intervalMs = (config.generationInterval ?? 720) * 60 * 1000; // default 12 h
+      const latestVideo = videos[0]; // already sorted newest-first
+
+      if (latestVideo?.createdAt) {
+        const lastGenTime = new Date(latestVideo.createdAt).getTime();
+        const elapsed = Date.now() - lastGenTime;
+
+        if (elapsed < intervalMs) {
+          const remainingMs = intervalMs - elapsed;
+          const remainingMin = Math.ceil(remainingMs / 60000);
+          const nextEligible = new Date(lastGenTime + intervalMs).toISOString();
+
+          db.log(
+            'info',
+            `Cooldown active — skipping generation. Last video ${Math.round(elapsed / 60000)}m ago, need ${config.generationInterval}m interval. Next eligible: ${nextEligible}`,
+          );
+
+          return NextResponse.json({
+            success: true,
+            skipped: true,
+            reason: 'cooldown',
+            lastVideoAt: latestVideo.createdAt,
+            nextEligibleAt: nextEligible,
+            remainingMinutes: remainingMin,
+            message: `Cooldown active. Last video was generated ${Math.round(elapsed / 60000)} minutes ago. Next generation eligible in ${remainingMin} minutes (at ${nextEligible}).`,
+          });
+        }
+      }
+    }
+
+    // ── Start Generation ────────────────────────────────────────────
     const jobInfo = await startVideoGeneration({ category, style });
 
     return NextResponse.json({

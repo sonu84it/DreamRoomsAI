@@ -21,10 +21,28 @@ export async function POST(req: NextRequest) {
     // Enforce generationInterval: skip if the last video was generated
     // less than `generationInterval` minutes ago (unless force=true).
     if (!force) {
-      const [config, videos] = await Promise.all([
+      const [config, videos, jobs] = await Promise.all([
         db.getConfig(),
         db.getVideos({ sort: 'newest' }),
+        db.getGenerationJobs(),
       ]);
+
+      // Guard 1: Prevent parallel duplicate generations if a job is already in progress
+      const pendingJob = jobs.find((j) => j.status === 'PENDING');
+      if (pendingJob) {
+        db.log(
+          'info',
+          `Skipping generation — another generation job (${pendingJob.id}) is already in progress.`,
+        );
+
+        return NextResponse.json({
+          success: true,
+          skipped: true,
+          reason: 'pending_job',
+          jobId: pendingJob.id,
+          message: `A video generation job is already in progress (Job ID: ${pendingJob.id}). Skipping to prevent parallel duplicates.`,
+        });
+      }
 
       const intervalMs = (config.generationInterval ?? 720) * 60 * 1000; // default 12 h
       const latestVideo = videos[0]; // already sorted newest-first
